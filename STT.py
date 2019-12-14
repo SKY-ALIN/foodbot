@@ -20,13 +20,13 @@ class STT:
 
     def recognize(self):
         self.pip()
-        with sr.Microphone(device_index=2) as source:
+        with sr.Microphone(device_index=2) as source: # device_index=2
             print("Listen microphone")
             audio = self.recognizer.listen(source)
             self.pip()
         try:
             text = self.recognizer.recognize_google(audio, language="ru-RU")
-            print("Recognized test:", text)
+            print("Recognized text:", text)
             return text
         except sr.UnknownValueError:
             print("Can't recognize")
