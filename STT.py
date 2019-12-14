@@ -3,11 +3,18 @@ from pygame import mixer
 import time
 
 class STT:
+    """
+    Движок для распознавания речи. Работает как надстройка над сборкой из
+    разных сервисов от google, amazon, microsoft и т.д.
+    """
     def __init__(self):
         self.recognizer = sr.Recognizer()
         print("STT engine has started")
 
     def pip(self):
+        """
+        Подача звукогого сигнала.
+        """
         mixer.init()
         f=open("pip.mp3","rb")
         mixer.music.load(f)
