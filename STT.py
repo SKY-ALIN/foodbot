@@ -20,7 +20,7 @@ class STT:
 
     def recognize(self):
         self.pip()
-        with sr.Microphone() as source:
+        with sr.Microphone(device_index=2) as source:
             print("Listen microphone")
             audio = self.recognizer.listen(source)
             self.pip()
