@@ -11,7 +11,7 @@ class TTS:
     использующей сервисы google.
     """
     def __init__(self):
-        mixer.init()
+        # mixer.init()
         print("TTS engine has started")
 
     def say(self, what, l='ru'):
