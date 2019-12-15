@@ -1,6 +1,7 @@
 import speech_recognition as sr
 from pygame import mixer
 import time
+import os
 
 class STT:
     """
@@ -27,20 +28,21 @@ class STT:
 
     def recognize(self):
         self.pip()
-        with sr.Microphone() as source: # device_index=2
-            print("Listen microphone...")
-            audio = self.recognizer.listen(source)
-            self.pip()
+        os.system('arecord -D plughw:1,0 -d 5 clientVoice.wav')
+        print("Listen microphone...")
+        self.pip()
+        with sr.AudioFile("clientVoice.wav") as source: # device_index=2
+            audio = self.recognizer.record(source)
 
-        try:
-            print("Recognizing speech via sphinx...")
-            text = self.recognizer.recognize_sphinx(audio)
-            print("Recognized text:", text)
-            return text
-        except sr.UnknownValueError:
-            print("Can't recognize via sphinx")
-        except sr.RequestError as e:
-            print("Service error:", e)
+        # try:
+        #     print("Recognizing speech via sphinx...")
+        #     text = self.recognizer.recognize_sphinx(audio)
+        #     print("Recognized text:", text)
+        #     return text
+        # except sr.UnknownValueError:
+        #     print("Can't recognize via sphinx")
+        # except sr.RequestError as e:
+        #     print("Service error:", e)
 
         try:
             print("Recognizing speech via google...")

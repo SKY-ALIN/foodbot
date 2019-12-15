@@ -10,6 +10,8 @@ import requests
 
 from FR import *
 
+from threading import Thread
+
 def remember_dishes(session, person, dishes):
     """
     Функция перезаписи блюд клиента.
@@ -32,14 +34,19 @@ def send_to_kitchen(name, dishes):
     r = requests.post('http://194.67.220.170/dashboard/write_kitchen_data/', json={"client": name, "dishes": dishes})
     print("Status code:", r.status_code)
 
+def rec():
+    global name
+    while 1:
+        name = recognation()
+
 def main():
+    global name
+    name = False
     TTSE = TTS()
     STTE = STT()
     NLPC = NLP()
     while True:
-        name = FR.recognation()
         if name: # Если мы увидели покупателя
-            name = "Vova"
             session = Session()
             person = session.query(People).filter(People.name == name).first()
             if person: # Мы знаем этого человека
@@ -109,4 +116,9 @@ def main():
             session.close()
 
 if __name__ == '__main__':
-	main()
+    ggg = Thread(target = main)
+    video = Thread(target = rec)
+    ggg.start()
+    video.start()
+    global name
+    name = False
