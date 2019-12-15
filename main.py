@@ -6,6 +6,8 @@ from TTS import TTS
 from STT import STT
 from NLP import get_yes_or_no, get_dishes
 
+import requests
+
 def remember_dishes(session, person, dishes):
     """
     Функция перезаписи блюд клиента.
@@ -21,8 +23,12 @@ def remember_dishes(session, person, dishes):
         session.add(new_dish)
         session.commit()
 
-def send_to_citchen(person, dishes):
-    pass
+def send_to_kitchen(person, dishes):
+    """
+    Отправляем данные на кухню.
+    """
+    r = requests.post('http://194.67.220.170/dashboard/write_kitchen_data/', json={"client": person.name, "dishes": dishes})
+    print("Status code:", r.status_code)
 
 def main():
     TTSE = TTS()
@@ -40,7 +46,7 @@ def main():
                 if answer:
                     # Узнаём положительный ли или отрицательный клиент дал ответ
                     if get_yes_ot_no(answer):
-                        send_to_citchen(person, person.dishes)
+                        send_to_kitchen(person, person.dishes)
                         dishes = ""
                         for dish in person.dishes:
                             dishes += " " + dish
@@ -51,7 +57,7 @@ def main():
                         # Проверяем содержался ли ответ в первом ответе клиента
                         # (А такое вполне возможно)
                         if dishes:
-                            send_to_citchen(person, dishes)
+                            send_to_kitchen(person, dishes)
                             temp = ""
                             for dish in dishes:
                                 temp += " " + dish
@@ -64,7 +70,7 @@ def main():
                             if answer:
                                 dishes = get_dishes(answer)
                                 if dishes:
-                                    send_to_citchen(person, dishes)
+                                    send_to_kitchen(person, dishes)
                                     temp = ""
                                     for dish in dishes:
                                         temp += " " + dish
@@ -81,8 +87,20 @@ def main():
                 exit()
             else: # Если мы его не знаем
                 TTSE.say("Что вы хотели бы заказать?")
-        else:
-            pass # Если мы никого не видим
+                answer = STTE.recognize()
+                if answer:
+                    dishes = get_dishes(answer)
+                    if dishes:
+                        send_to_kitchen("Неизвестный клиент", dishes)
+                        temp = ""
+                        for dish in dishes:
+                            temp += " " + dish
+                        TTSE.say("Заказ"+temp+" принят!")
+                        TTSE.say("Приятного время провождения!")
+                    else:
+                        TTSE.say("Я так и не услышала названия блюд.")
+                else:
+                    TTSE.say("Не могу распознать.")
 
 if __name__ == '__main__':
 	main()
