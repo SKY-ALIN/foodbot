@@ -4,7 +4,7 @@ Base.metadata.create_all(engine)
 
 from TTS import TTS
 from STT import STT
-from NLP import get_yes_or_no, get_dishes
+from NLP import NLP
 
 import requests
 
@@ -33,6 +33,7 @@ def send_to_kitchen(person, dishes):
 def main():
     TTSE = TTS()
     STTE = STT()
+    NLPC = NLP()
     while True:
         if 1: # Если мы увидели покупателя
             if 1: # Мы знаем этого человека
@@ -45,7 +46,7 @@ def main():
                 answer = STTE.recognize()
                 if answer:
                     # Узнаём положительный ли или отрицательный клиент дал ответ
-                    if get_yes_ot_no(answer):
+                    if NLPC.get_yes_or_no(answer):
                         send_to_kitchen(person, person.dishes)
                         dishes = ""
                         for dish in person.dishes:
@@ -53,7 +54,7 @@ def main():
                         TTSE.say("Хорошо, сейчас сделаем как обычно"+temp)
                         TTSE.say("Приятного время провождения, {}!".format(person.name))
                     else:
-                        dishes = get_dishes(answer)
+                        dishes = NLPC.get_dishes(answer)
                         # Проверяем содержался ли ответ в первом ответе клиента
                         # (А такое вполне возможно)
                         if dishes:
@@ -68,7 +69,7 @@ def main():
                             TTSE.say("Хорошо, {}, чего бы вы тогда хотели заказать?".format(person.name))
                             answer = STTE.recognize()
                             if answer:
-                                dishes = get_dishes(answer)
+                                dishes = NLPC.get_dishes(answer)
                                 if dishes:
                                     send_to_kitchen(person, dishes)
                                     temp = ""
@@ -89,7 +90,7 @@ def main():
                 TTSE.say("Что вы хотели бы заказать?")
                 answer = STTE.recognize()
                 if answer:
-                    dishes = get_dishes(answer)
+                    dishes = NLPC.get_dishes(answer)
                     if dishes:
                         send_to_kitchen("Неизвестный клиент", dishes)
                         temp = ""
