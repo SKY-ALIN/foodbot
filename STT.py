@@ -28,10 +28,11 @@ class STT:
     def recognize(self):
         self.pip()
         with sr.Microphone(device_index=2) as source: # device_index=2
-            print("Listen microphone")
+            print("Listen microphone...")
             audio = self.recognizer.listen(source)
             self.pip()
         try:
+            print("Recognizing speech...")
             text = self.recognizer.recognize_google(audio, language="ru-RU")
             print("Recognized text:", text)
             return text
