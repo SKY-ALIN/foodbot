@@ -28,11 +28,12 @@ class STT:
 
     def recognize(self):
         self.pip()
-        os.system('arecord -D plughw:1,0 -d 5 clientVoice.wav')
-        print("Listen microphone...")
-        self.pip()
-        with sr.AudioFile("clientVoice.wav") as source: # device_index=2
-            audio = self.recognizer.record(source)
+        # os.system('arecord -D plughw:1,0 -d 5 clientVoice.wav')
+        # AUDIO_FILE = path.join(path.dirname(path.realpath(__file__)), "english.wav")
+        with sr.Microphone() as source: # device_index=2
+            print("Listen microphone...")
+            audio = self.recognizer.listen(source)
+            self.pip()
 
         # try:
         #     print("Recognizing speech via sphinx...")
