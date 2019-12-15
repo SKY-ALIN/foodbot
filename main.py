@@ -23,11 +23,11 @@ def remember_dishes(session, person, dishes):
         session.add(new_dish)
         session.commit()
 
-def send_to_kitchen(person, dishes):
+def send_to_kitchen(name, dishes):
     """
     Отправляем данные на кухню.
     """
-    r = requests.post('http://194.67.220.170/dashboard/write_kitchen_data/', json={"client": person.name, "dishes": dishes})
+    r = requests.post('http://194.67.220.170/dashboard/write_kitchen_data/', json={"client": name, "dishes": dishes})
     print("Status code:", r.status_code)
 
 def main():
@@ -36,7 +36,7 @@ def main():
     NLPC = NLP()
     while True:
         if 1: # Если мы увидели покупателя
-            if 1: # Мы знаем этого человека
+            if 0: # Мы знаем этого человека
                 person_id = 1 # id распознанного человека из базы
                 session = Session()
                 person = session.query(People).filter(People.id == person_id).first()
@@ -47,7 +47,7 @@ def main():
                 if answer:
                     # Узнаём положительный ли или отрицательный клиент дал ответ
                     if NLPC.get_yes_or_no(answer):
-                        send_to_kitchen(person, person.dishes)
+                        send_to_kitchen(person.name, person.dishes)
                         dishes = ""
                         for dish in person.dishes:
                             dishes += " " + dish
@@ -58,7 +58,7 @@ def main():
                         # Проверяем содержался ли ответ в первом ответе клиента
                         # (А такое вполне возможно)
                         if dishes:
-                            send_to_kitchen(person, dishes)
+                            send_to_kitchen(person.name, dishes)
                             temp = ""
                             for dish in dishes:
                                 temp += " " + dish
@@ -71,7 +71,7 @@ def main():
                             if answer:
                                 dishes = NLPC.get_dishes(answer)
                                 if dishes:
-                                    send_to_kitchen(person, dishes)
+                                    send_to_kitchen(person.name, dishes)
                                     temp = ""
                                     for dish in dishes:
                                         temp += " " + dish
