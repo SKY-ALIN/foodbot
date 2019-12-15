@@ -31,13 +31,25 @@ class STT:
             print("Listen microphone...")
             audio = self.recognizer.listen(source)
             self.pip()
+
         try:
-            print("Recognizing speech...")
+            print("Recognizing speech via sphinx...")
+            text = self.recognizer.recognize_sphinx(audio)
+            print("Recognized text:", text)
+            return text
+        except sr.UnknownValueError:
+            print("Can't recognize via sphinx")
+        except sr.RequestError as e:
+            print("Service error:", e)
+
+        try:
+            print("Recognizing speech via google...")
             text = self.recognizer.recognize_google(audio, language="ru-RU")
             print("Recognized text:", text)
             return text
         except sr.UnknownValueError:
-            print("Can't recognize")
+            print("Can't recognize via google")
         except sr.RequestError as e:
             print("Service error:", e)
+
         return False

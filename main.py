@@ -8,6 +8,8 @@ from NLP import NLP
 
 import requests
 
+from FR import *
+
 def remember_dishes(session, person, dishes):
     """
     Функция перезаписи блюд клиента.
@@ -35,11 +37,12 @@ def main():
     STTE = STT()
     NLPC = NLP()
     while True:
-        if 1: # Если мы увидели покупателя
-            if 0: # Мы знаем этого человека
-                person_id = 1 # id распознанного человека из базы
-                session = Session()
-                person = session.query(People).filter(People.id == person_id).first()
+        name = FR.recognation()
+        if name: # Если мы увидели покупателя
+            name = "Vova"
+            session = Session()
+            person = session.query(People).filter(People.name == name).first()
+            if person: # Мы знаем этого человека
                 TTSE.say("Добрый день {}".format(person.name))
 
                 TTSE.say("Вам как обычно или чего-нибудь новенького?")
@@ -47,11 +50,13 @@ def main():
                 if answer:
                     # Узнаём положительный ли или отрицательный клиент дал ответ
                     if NLPC.get_yes_or_no(answer):
-                        send_to_kitchen(person.name, person.dishes)
                         dishes = ""
+                        temp = []
                         for dish in person.dishes:
-                            dishes += " " + dish
-                        TTSE.say("Хорошо, сейчас сделаем как обычно"+temp)
+                            dishes += " " + dish.name
+                            temp.append(dish.name)
+                        send_to_kitchen(person.name, temp)
+                        TTSE.say("Хорошо, сейчас сделаем как обычно"+dishes)
                         TTSE.say("Приятного время провождения, {}!".format(person.name))
                     else:
                         dishes = NLPC.get_dishes(answer)
@@ -85,7 +90,6 @@ def main():
                 else:
                     TTSE.say("Не могу распознать.")
                 session.close()
-                exit()
             else: # Если мы его не знаем
                 TTSE.say("Что вы хотели бы заказать?")
                 answer = STTE.recognize()
@@ -102,6 +106,7 @@ def main():
                         TTSE.say("Я так и не услышала названия блюд.")
                 else:
                     TTSE.say("Не могу распознать.")
+            session.close()
 
 if __name__ == '__main__':
 	main()
